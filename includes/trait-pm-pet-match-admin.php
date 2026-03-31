@@ -124,16 +124,16 @@ trait PM_Pet_Match_Admin_Trait {
     $alerts_total    = self::count_posts('pm_alert', ['post_status'=>['publish']]);
 
     echo '<div class="pm-admin-grid">';
-      echo '<a class="pm-admin-card" href="'.esc_url(admin_url('admin.php?page=pet-match-cases')).'"><div class="pm-admin-card-kpi">'.esc_html($cases_total).'</div><div class="pm-admin-card-label">Casos</div><div class="pm-admin-card-desc">Gestion? perdidos y adopci?n</div></a>';
+      echo '<a class="pm-admin-card" href="'.esc_url(admin_url('admin.php?page=pet-match-cases')).'"><div class="pm-admin-card-kpi">'.esc_html($cases_total).'</div><div class="pm-admin-card-label">Casos</div><div class="pm-admin-card-desc">Gestion de perdidos y adopcion</div></a>';
       echo '<a class="pm-admin-card" href="'.esc_url(admin_url('admin.php?page=pet-match-sightings')).'"><div class="pm-admin-card-kpi">'.esc_html($sightings_total).'</div><div class="pm-admin-card-label">Avistajes</div><div class="pm-admin-card-desc">Reportes enviados por usuarios</div></a>';
       echo '<a class="pm-admin-card" href="'.esc_url(admin_url('admin.php?page=pet-match-alerts')).'"><div class="pm-admin-card-kpi">'.esc_html($alerts_total).'</div><div class="pm-admin-card-label">Alertas</div><div class="pm-admin-card-desc">Suscripciones por email</div></a>';
-      echo '<div class="pm-admin-card pm-admin-card-soft"><div class="pm-admin-card-kpi">'.esc_html($lost_total).'</div><div class="pm-admin-card-label">Perdidos</div><div class="pm-admin-card-desc">Casos de b?squeda</div></div>';
-      echo '<div class="pm-admin-card pm-admin-card-soft"><div class="pm-admin-card-kpi">'.esc_html($adopt_total).'</div><div class="pm-admin-card-label">Adopci?n</div><div class="pm-admin-card-desc">Publicaciones para adoptar</div></div>';
+      echo '<div class="pm-admin-card pm-admin-card-soft"><div class="pm-admin-card-kpi">'.esc_html($lost_total).'</div><div class="pm-admin-card-label">Perdidos</div><div class="pm-admin-card-desc">Casos en busqueda</div></div>';
+      echo '<div class="pm-admin-card pm-admin-card-soft"><div class="pm-admin-card-kpi">'.esc_html($adopt_total).'</div><div class="pm-admin-card-label">Adopcion</div><div class="pm-admin-card-desc">Publicaciones para adoptar</div></div>';
     echo '</div>';
 
     echo '<div class="pm-admin-panels">';
       echo '<div class="pm-admin-panel">';
-        echo '<h2>Acciones r?pidas</h2>';
+        echo '<h2>Acciones rapidas</h2>';
         echo '<div class="pm-admin-actions">';
           echo '<a class="button button-primary" href="'.esc_url(admin_url('admin.php?page=pet-match-cases')).'">Ver casos</a> ';
           echo '<a class="button" href="'.esc_url(admin_url('admin.php?page=pet-match-settings')).'">Ajustes</a> ';
@@ -142,11 +142,11 @@ trait PM_Pet_Match_Admin_Trait {
       echo '</div>';
 
       echo '<div class="pm-admin-panel">';
-        echo '<h2>Tips de operaci?n</h2>';
+        echo '<h2>Tips de operacion</h2>';
         echo '<ul class="pm-admin-list">';
-          echo '<li>Us? <b>Casos</b> para editar, resolver o revisar publicaciones.</li>';
+          echo '<li>Usa <b>Casos</b> para editar, resolver o revisar publicaciones.</li>';
           echo '<li>Los <b>Avistajes</b> son reportes que llegan al autor y al admin (copia).</li>';
-          echo '<li>Si hay un error en el front, revis? <b>Logs</b> y peg? el stack trace.</li>';
+          echo '<li>Si hay un error en el front, revisa <b>Logs</b> y copia el stack trace.</li>';
         echo '</ul>';
       echo '</div>';
     echo '</div>';
@@ -199,7 +199,7 @@ trait PM_Pet_Match_Admin_Trait {
         echo '<input type="hidden" name="author" value="'.esc_attr((string) $author).'" />';
       }
 
-      echo '<input class="pm-admin-input" type="text" name="q" value="'.esc_attr($q).'" placeholder="Buscar por t?tulo o descripci?n..." />';
+      echo '<input class="pm-admin-input" type="text" name="q" value="'.esc_attr($q).'" placeholder="Buscar por titulo o descripcion..." />';
 
       echo '<select class="pm-admin-select" name="post_status">';
         $opts = [
@@ -228,7 +228,7 @@ trait PM_Pet_Match_Admin_Trait {
     echo '<div class="pm-admin-table-wrap"><table class="widefat fixed striped pm-admin-table">';
       echo '<thead><tr>';
         echo '<th style="width:64px;">Foto</th>';
-        echo '<th>TÃƒÂ­tulo</th>';
+        echo '<th>Titulo</th>';
         echo '<th style="width:140px;">Tipo</th>';
         echo '<th style="width:140px;">Zona</th>';
         echo '<th style="width:120px;">Estado</th>';
@@ -244,11 +244,9 @@ trait PM_Pet_Match_Admin_Trait {
           $thumb = get_the_post_thumbnail_url($pid,'thumbnail');
           $thumb_html = $thumb ? '<img class="pm-admin-thumb" src="'.esc_url($thumb).'" alt="" />' : '<div class="pm-admin-thumb pm-admin-thumb-empty">?</div>';
 
-          $type_terms = get_the_terms($pid, self::get_case_taxonomy('type'));
-          $type_name = (!is_wp_error($type_terms) && !empty($type_terms)) ? $type_terms[0]->name : '?';
-
-          $zone_terms = get_the_terms($pid, self::get_case_taxonomy('zone'));
-          $zone_name = (!is_wp_error($zone_terms) && !empty($zone_terms)) ? $zone_terms[0]->name : '?';
+          $type_name = self::get_case_term_label($pid, self::get_case_taxonomy('type'));
+          $zone_name = self::get_case_term_label($pid, self::get_case_taxonomy('zone'));
+          $case_title = self::get_case_display_title($pid);
 
           $pm_status = self::get_case_status($pid);
           $pm_status_label = self::get_case_status_label($pm_status);
@@ -258,7 +256,7 @@ trait PM_Pet_Match_Admin_Trait {
 
           echo '<tr>';
             echo '<td>'.$thumb_html.'</td>';
-            echo '<td><b>'.esc_html(get_the_title()).'</b><div class="pm-admin-muted">'.esc_html(wp_trim_words(get_the_content(),16,'...')).'</div></td>';
+            echo '<td><b>'.esc_html($case_title).'</b><div class="pm-admin-muted">'.esc_html(wp_trim_words(get_the_content(),16,'...')).'</div></td>';
             echo '<td><span class="pm-admin-pill">'.esc_html($type_name).'</span></td>';
             echo '<td>'.esc_html($zone_name).'</td>';
             echo '<td><span class="pm-admin-status pm-admin-status-'.esc_attr($pm_status).'">'.esc_html($pm_status_label).'</span></td>';
@@ -274,13 +272,13 @@ trait PM_Pet_Match_Admin_Trait {
               );
               echo '<a class="button button-small" style="color:#b32d2e;border-color:#b32d2e" '
                 . 'href="'.esc_url($trash_url).'" '
-                . 'onclick="return confirm(\'?Mover este caso a la papelera?\');">Eliminar</a>';
+                . 'onclick="return confirm(\'Mover este caso a la papelera?\');">Eliminar</a>';
             echo '</td>';
           echo '</tr>';
         }
         wp_reset_postdata();
       } else {
-        echo '<tr><td colspan="7"><div class="pm-admin-empty">No encontramos casos con esos filtros. ProbÃ¡ ampliar la bÃºsqueda o limpiar algÃºn criterio.</div></td></tr>';
+        echo '<tr><td colspan="7"><div class="pm-admin-empty">No encontramos casos con esos filtros. Proba ampliar la busqueda o limpiar algun criterio.</div></td></tr>';
       }
 
     echo '</tbody></table></div>';
@@ -296,8 +294,8 @@ trait PM_Pet_Match_Admin_Trait {
         'format' => '',
         'current' => $current,
         'total' => $total_pages,
-        'prev_text' => '?',
-        'next_text' => '?',
+        'prev_text' => 'Anterior',
+        'next_text' => 'Siguiente',
       ]);
       echo '</div>';
     }
@@ -310,8 +308,8 @@ trait PM_Pet_Match_Admin_Trait {
 
     $pid = isset($_GET['case_id']) ? intval($_GET['case_id']) : 0;
     if (!$pid || get_post_type($pid) !== self::CPT) {
-      self::admin_header('Editar caso', 'Caso invÃƒÂ¡lido.');
-      echo '<div class="pm-admin-empty">No encontramos ese caso. Puede haber sido eliminado o el enlace ya no es vÃ¡lido.</div>';
+      self::admin_header('Editar caso', 'Caso invalido.');
+      echo '<div class="pm-admin-empty">No encontramos ese caso. Puede haber sido eliminado o el enlace ya no es valido.</div>';
       self::admin_footer();
       return;
     }
@@ -352,6 +350,12 @@ trait PM_Pet_Match_Admin_Trait {
     }
 
     $post = get_post($pid);
+    if (!($post instanceof \WP_Post)) {
+      self::admin_header('Editar caso', 'Caso invalido.');
+      echo '<div class="pm-admin-empty">No encontramos ese caso. Puede haber sido eliminado o el enlace ya no es valido.</div>';
+      self::admin_footer();
+      return;
+    }
     $pm_status = self::get_case_status($pid);
     $pm_date = self::get_case_meta($pid,'date');
     $pm_lat = self::get_case_meta($pid,'lat');
@@ -458,7 +462,7 @@ trait PM_Pet_Match_Admin_Trait {
             }
             echo '</div>';
           } else {
-            echo '<div class="pm-admin-empty">Este caso todavÃ­a no tiene imÃ¡genes cargadas.</div>';
+            echo '<div class="pm-admin-empty">Este caso todavia no tiene imagenes cargadas.</div>';
           }
         }
         $wa = self::get_case_meta($pid, 'whatsapp');
@@ -472,14 +476,14 @@ trait PM_Pet_Match_Admin_Trait {
 
   private static function admin_terms_select(string $taxonomy, string $field_name, int $post_id) : string {
     $terms = get_terms(['taxonomy'=>$taxonomy,'hide_empty'=>false]);
-    if (is_wp_error($terms)) return '<select class="pm-admin-select full" name="'.esc_attr($field_name).'"><option value="">?</option></select>';
+    if (is_wp_error($terms)) return '<select class="pm-admin-select full" name="'.esc_attr($field_name).'"><option value="">Sin asignar</option></select>';
 
     $selected = 0;
     $current = get_the_terms($post_id, $taxonomy);
     if (!is_wp_error($current) && !empty($current)) $selected = intval($current[0]->term_id);
 
     $html = '<select class="pm-admin-select full" name="'.esc_attr($field_name).'">';
-    $html .= '<option value=>?</option>';
+    $html .= '<option value="">Sin asignar</option>';
     foreach ($terms as $t) {
       $html .= '<option value="'.esc_attr($t->term_id).'" '.selected($selected, intval($t->term_id), false).'>'.esc_html($t->name).'</option>';
     }
@@ -512,20 +516,22 @@ trait PM_Pet_Match_Admin_Trait {
         while ($query->have_posts()) {
           $query->the_post();
           $pid = get_the_ID();
-          $email = get_post_meta($pid,'email',true);
+          $email = sanitize_email((string) get_post_meta($pid,'email',true));
           $case_id = intval(get_post_meta($pid,'case_id',true));
-          $case_link = $case_id ? '<a href="'.esc_url(admin_url('admin.php?page=pet-match-edit-case&case_id='.$case_id)).'">'.esc_html(get_the_title($case_id)).'</a>' : '?';
+          $case_title = $case_id ? self::get_case_display_title($case_id) : 'Sin caso asociado';
+          $case_link = $case_id ? '<a href="'.esc_url(admin_url('admin.php?page=pet-match-edit-case&case_id='.$case_id)).'">'.esc_html($case_title).'</a>' : 'Sin caso asociado';
+          $sighting_title = self::get_case_display_title($pid, 'Avistaje sin titulo');
 
           echo '<tr>';
             echo '<td>'.esc_html(get_the_date('Y-m-d')).'</td>';
-            echo '<td><b>'.esc_html(get_the_title()).'</b><div class="pm-admin-muted">'.esc_html(wp_trim_words(get_the_content(),22,'...')).'</div></td>';
-            echo '<td>'.esc_html($email ?: '?').'</td>';
+            echo '<td><b>'.esc_html($sighting_title).'</b><div class="pm-admin-muted">'.esc_html(wp_trim_words(get_the_content(),22,'...')).'</div></td>';
+            echo '<td>'.esc_html($email !== '' ? $email : 'Sin email').'</td>';
             echo '<td>'.$case_link.'</td>';
           echo '</tr>';
         }
         wp_reset_postdata();
       } else {
-        echo '<tr><td colspan="4"><div class="pm-admin-empty">TodavÃ­a no hay avistajes registrados. Cuando llegue el primero lo vas a ver acÃ¡.</div></td></tr>';
+        echo '<tr><td colspan="4"><div class="pm-admin-empty">Todavia no hay avistajes registrados. Cuando llegue el primero lo vas a ver aca.</div></td></tr>';
       }
 
     echo '</tbody></table></div>';
@@ -558,19 +564,22 @@ trait PM_Pet_Match_Admin_Trait {
         while ($query->have_posts()) {
           $query->the_post();
           $pid = get_the_ID();
-          $email = get_post_meta($pid,'email',true);
-          $type = get_post_meta($pid,'type',true);
+          $email = sanitize_email((string) get_post_meta($pid,'email',true));
+          $type = self::normalize_alert_type((string) get_post_meta($pid,'type',true));
+          $type_options = self::get_alert_type_options();
+          $type_label = $type !== '' ? ($type_options[$type] ?? $type) : 'Sin tipo valido';
+          $alert_title = self::get_case_display_title($pid, 'Alerta sin titulo');
 
           echo '<tr>';
             echo '<td>'.esc_html(get_the_date('Y-m-d')).'</td>';
-            echo '<td><b>'.esc_html($email ?: get_the_title()).'</b></td>';
-            echo '<td><span class="pm-admin-pill">'.esc_html($type ?: '?').'</span></td>';
-            echo '<td class="pm-admin-muted">?</td>';
+            echo '<td><b>'.esc_html($email !== '' ? $email : $alert_title).'</b></td>';
+            echo '<td><span class="pm-admin-pill">'.esc_html($type_label).'</span></td>';
+            echo '<td class="pm-admin-muted">Sin filtros extra guardados.</td>';
           echo '</tr>';
         }
         wp_reset_postdata();
       } else {
-        echo '<tr><td colspan="4"><div class="pm-admin-empty">TodavÃ­a no hay alertas creadas. Cuando alguien se suscriba por email aparecerÃ¡ en este listado.</div></td></tr>';
+        echo '<tr><td colspan="4"><div class="pm-admin-empty">Todavia no hay alertas creadas. Cuando alguien se suscriba por email aparecera en este listado.</div></td></tr>';
       }
 
     echo '</tbody></table></div>';
@@ -599,7 +608,7 @@ trait PM_Pet_Match_Admin_Trait {
       echo '<div class="notice notice-success is-dismissible"><p>Ajustes guardados correctamente.</p></div>';
     }
 
-    self::admin_header('Ajustes', 'ConfiguraciÃƒÂ³n operativa del plugin.');
+    self::admin_header('Ajustes', 'Configuracion operativa del plugin.');
     $dependency_status = self::get_asset_dependency_status();
 
     echo '<form method="post" class="pm-admin-panel pm-admin-form">';
@@ -621,10 +630,10 @@ trait PM_Pet_Match_Admin_Trait {
       echo '<div class="pm-admin-row">';
         echo '<div class="pm-admin-check">';
           echo '<label><input type="checkbox" name="require_login_create" '.checked($settings['require_login_create'],1,false).' /> Requerir login para publicar casos</label>';
-          echo '<div class="pm-admin-muted">Bloquea el shortcode pÃƒÂºblico y tambiÃƒÂ©n el envÃƒÂ­o real del formulario del lado del servidor.</div>';
+          echo '<div class="pm-admin-muted">Bloquea el shortcode publico y tambien el envio real del formulario del lado del servidor.</div>';
         echo '</div>';
         echo '<div class="pm-admin-check">';
-          echo '<div class="pm-admin-muted">El ajuste de radio por defecto fue removido porque la bÃƒÂºsqueda geogrÃƒÂ¡fica por distancia todavÃƒÂ­a no estÃƒÂ¡ implementada en el plugin.</div>';
+          echo '<div class="pm-admin-muted">El ajuste de radio por defecto fue removido porque la busqueda geografica por distancia todavia no esta implementada en el plugin.</div>';
         echo '</div>';
       echo '</div>';
 
@@ -677,7 +686,7 @@ trait PM_Pet_Match_Admin_Trait {
       <p>
         <label for="pm_is_shelter">
           <input type="checkbox" name="pm_is_shelter" id="pm_is_shelter" value="1" <?php checked(!empty($_POST['pm_is_shelter'])); ?>>
-          <?php esc_html_e('Me estoy registrando como refugio u organizaciÃƒÂ³n de rescate', 'pet-match'); ?>
+          <?php esc_html_e('Me estoy registrando como refugio u organizacion de rescate', 'pet-match'); ?>
         </label>
       </p>
       <?php
@@ -928,7 +937,7 @@ trait PM_Pet_Match_Admin_Trait {
         $notice = 'Refugio verificado correctamente.';
       } elseif ($do === 'unverify') {
         delete_user_meta($user_id, 'pm_shelter_verified');
-        $notice = 'Se quitÃƒÂ³ la verificaciÃƒÂ³n del refugio.';
+        $notice = 'Se quito la verificacion del refugio.';
       }
 
       if ($notice !== '') {
@@ -997,7 +1006,7 @@ trait PM_Pet_Match_Admin_Trait {
         $summary['total_cases'] += (int) $row['case_summary']['total'];
       }
 
-      self::admin_header('Refugios', 'GestionÃƒÂ¡ usuarios registrados como refugios, su verificaciÃƒÂ³n y sus publicaciones.');
+      self::admin_header('Refugios', 'Gestiona usuarios registrados como refugios, su verificacion y sus publicaciones.');
 
       $notice = self::get_request_feedback_notice('pm_notice');
       if ($notice !== '') {
@@ -1007,7 +1016,7 @@ trait PM_Pet_Match_Admin_Trait {
       echo '<div class="pm-admin-grid">';
         echo '<div class="pm-admin-card pm-admin-card-soft"><div class="pm-admin-card-kpi">'.esc_html($summary['total']).'</div><div class="pm-admin-card-label">Refugios</div><div class="pm-admin-card-desc">Usuarios registrados como refugio</div></div>';
         echo '<div class="pm-admin-card pm-admin-card-soft"><div class="pm-admin-card-kpi">'.esc_html($summary['verified']).'</div><div class="pm-admin-card-label">Verificados</div><div class="pm-admin-card-desc">Pueden autopublicar si el flujo lo usa</div></div>';
-        echo '<div class="pm-admin-card pm-admin-card-soft"><div class="pm-admin-card-kpi">'.esc_html($summary['pending']).'</div><div class="pm-admin-card-label">Pendientes</div><div class="pm-admin-card-desc">Requieren revisiÃƒÂ³n administrativa</div></div>';
+        echo '<div class="pm-admin-card pm-admin-card-soft"><div class="pm-admin-card-kpi">'.esc_html($summary['pending']).'</div><div class="pm-admin-card-label">Pendientes</div><div class="pm-admin-card-desc">Requieren revision administrativa</div></div>';
         echo '<div class="pm-admin-card pm-admin-card-soft"><div class="pm-admin-card-kpi">'.esc_html($summary['published_cases']).'</div><div class="pm-admin-card-label">Casos publicados</div><div class="pm-admin-card-desc">Publicaciones visibles de refugios</div></div>';
         echo '<div class="pm-admin-card pm-admin-card-soft"><div class="pm-admin-card-kpi">'.esc_html($summary['total_cases']).'</div><div class="pm-admin-card-label">Casos totales</div><div class="pm-admin-card-desc">Incluye borradores y pendientes</div></div>';
       echo '</div>';
@@ -1025,10 +1034,10 @@ trait PM_Pet_Match_Admin_Trait {
       echo '</form>';
 
       echo '<div class="pm-admin-table-wrap"><table class="widefat fixed striped pm-admin-table">';
-      echo '<thead><tr><th>Refugio</th><th>Contacto</th><th>Registrado</th><th>Estado</th><th>Casos</th><th>ÃƒÅ¡ltimo caso</th><th>Acciones</th></tr></thead><tbody>';
+      echo '<thead><tr><th>Refugio</th><th>Contacto</th><th>Registrado</th><th>Estado</th><th>Casos</th><th>Ultimo caso</th><th>Acciones</th></tr></thead><tbody>';
 
       if (empty($rows)) {
-        echo '<tr><td colspan="7"><div class="pm-admin-empty">No encontramos refugios con esos filtros. ProbÃ¡ cambiar el estado o limpiar la bÃºsqueda.</div></td></tr>';
+        echo '<tr><td colspan="7"><div class="pm-admin-empty">No encontramos refugios con esos filtros. Proba cambiar el estado o limpiar la busqueda.</div></td></tr>';
       } else {
         foreach ($rows as $row) {
           $user = $row['user'];
@@ -1054,13 +1063,13 @@ trait PM_Pet_Match_Admin_Trait {
           echo '<div class="pm-admin-muted">'.esc_html((string) $case_summary['published']).' publicados, '.esc_html((string) $case_summary['open']).' abiertos, '.esc_html((string) $case_summary['resolved']).' resueltos</div>';
           echo '</td>';
           if (!empty($case_summary['last_case_id'])) {
-            echo '<td><a href="'.esc_url(get_permalink((int) $case_summary['last_case_id'])).'" target="_blank" rel="noopener">'.esc_html(get_the_title((int) $case_summary['last_case_id'])).'</a><div class="pm-admin-muted">'.esc_html($case_summary['last_case_date']).'</div></td>';
+            echo '<td><a href="'.esc_url(get_permalink((int) $case_summary['last_case_id'])).'" target="_blank" rel="noopener">'.esc_html(self::get_case_display_title((int) $case_summary['last_case_id'])).'</a><div class="pm-admin-muted">'.esc_html($case_summary['last_case_date']).'</div></td>';
           } else {
-            echo '<td><span class="pm-admin-muted">TodavÃƒÂ­a sin casos publicados.</span></td>';
+            echo '<td><span class="pm-admin-muted">Todavia sin casos publicados.</span></td>';
           }
           echo '<td class="pm-admin-actions-col">';
           if ($row['is_verified']) {
-            echo '<a class="button" href="'.esc_url($url_unverify).'">Quitar verificaciÃƒÂ³n</a> ';
+            echo '<a class="button" href="'.esc_url($url_unverify).'">Quitar verificacion</a> ';
           } else {
             echo '<a class="button button-primary" href="'.esc_url($url_verify).'">Verificar</a> ';
           }

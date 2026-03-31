@@ -236,7 +236,7 @@ trait PM_Pet_Match_Forms_Trait {
       $main_full = wp_get_attachment_image_url($main_id, 'full');
       $main_alt = get_post_meta($main_id, '_wp_attachment_image_alt', true);
       if ($main_alt === '') {
-        $main_alt = get_the_title($post_id);
+        $main_alt = self::get_case_display_title($post_id);
       }
 
       $main_button = '<button type="button" class="pm-case-gallery-main-btn" data-pm-gallery-open data-pm-gallery-src="' . esc_url($main_full ? $main_full : $main_large) . '" data-pm-gallery-alt="' . esc_attr($main_alt) . '" aria-label="Ver imagen en grande">';
@@ -253,7 +253,7 @@ trait PM_Pet_Match_Forms_Trait {
         }
         $thumb_alt = get_post_meta($tid, '_wp_attachment_image_alt', true);
         if ($thumb_alt === '') {
-          $thumb_alt = get_the_title($post_id);
+          $thumb_alt = self::get_case_display_title($post_id);
         }
 
         $thumbs .= '<button type="button" class="pm-case-gallery-thumb' . ($tid === $main_id ? ' is-active' : '') . '"';
@@ -336,7 +336,7 @@ trait PM_Pet_Match_Forms_Trait {
       $subject = apply_filters('pm_alert_email_subject', $subject, $alert, $case_context);
 
       $summary = [
-        'Titulo: ' . ($case_context['title'] ?: 'Caso sin titulo'),
+        'Titulo: ' . ($case_context['title'] ?: self::get_case_display_title($post_id)),
         'Tipo: ' . $type_label,
       ];
       if ($species_name !== '') {

@@ -74,6 +74,25 @@ trait PM_Pet_Match_Core_Trait {
     return is_wp_error($terms) ? [] : $terms;
   }
 
+  private static function get_case_display_title(int $post_id, string $fallback = 'Caso sin titulo') : string {
+    $title = trim((string) get_the_title($post_id));
+    return $title !== '' ? $title : $fallback;
+  }
+
+  private static function get_case_term_label(int $post_id, string $taxonomy, string $fallback = 'Sin asignar') : string {
+    if ($taxonomy === '') {
+      return $fallback;
+    }
+
+    $terms = get_the_terms($post_id, $taxonomy);
+    if (is_wp_error($terms) || empty($terms) || !isset($terms[0]->name)) {
+      return $fallback;
+    }
+
+    $name = trim((string) $terms[0]->name);
+    return $name !== '' ? $name : $fallback;
+  }
+
   private static function get_case_meta_config() : array {
     return [
       'lat' => ['key' => '_pm_lat', 'default' => '', 'type' => 'float'],
