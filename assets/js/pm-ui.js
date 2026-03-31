@@ -140,6 +140,6 @@ document.addEventListener('click', function (e) {
   if (!phone) { e.preventDefault(); return; }
   const ta = wrap.querySelector('textarea');
   const msg = ta ? ta.value.trim() : '';
-  const text = encodeURIComponent(msg || 'Hola! Te escribo por el caso publicado en Patitas.');
+  const text = encodeURIComponent(msg || 'Hola! Te escribo por el caso publicado en Pet Match.');
   btn.href = 'https://wa.me/' + phone + '?text=' + text;
 });

@@ -481,7 +481,7 @@ trait PM_Pet_Match_Core_Trait {
 
     $actions .= '</div>';
 
-    return '<div class="pm-wrap pm-app"><div class="pm-callout"><strong>' . esc_html__('Para publicar un caso necesitas iniciar sesion.', 'pet-match') . '</strong><p class="pm-muted">' . esc_html__('Activamos esta restriccion para poder cuidar mejor las publicaciones y el seguimiento de cada caso.', 'pet-match') . '</p>' . $actions . '</div></div>';
+    return '<div class="pm-wrap pm-app"><section class="pm-blocked-card pm-blocked-card--login"><div class="pm-blocked-card-copy"><span class="pm-blocked-card-kicker">' . esc_html__('Publicacion protegida', 'pet-match') . '</span><h2 class="pm-blocked-card-title">' . esc_html__('Para publicar un caso necesitas iniciar sesion.', 'pet-match') . '</h2><p class="pm-blocked-card-text">' . esc_html__('Activamos esta restriccion para poder cuidar mejor las publicaciones, el seguimiento de cada caso y el contacto con quienes ayudan.', 'pet-match') . '</p></div>' . $actions . '</section></div>';
   }
 
   private static function render_feedback_notice(string $message, string $type = 'error') : string {

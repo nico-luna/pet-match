@@ -179,12 +179,14 @@ trait PM_Pet_Match_Forms_Trait {
     $badge = '';
     $badge = self::get_case_status_badge_html($status);
 
-    $meta = '<div class="pm-case-meta pm-card">';
-    $meta .= '<div class="pm-case-meta-row"><strong>Estado:</strong> '.$badge.'</div>';
-    $meta .= '<div class="pm-case-meta-row"><strong>Tipo:</strong> '.esc_html($type[0] ?? '-').'</div>';
-    $meta .= '<div class="pm-case-meta-row"><strong>Especie:</strong> '.esc_html($species[0] ?? '-').'</div>';
-    $meta .= '<div class="pm-case-meta-row"><strong>Zona:</strong> '.esc_html($zone[0] ?? '-').'</div>';
-    $meta .= '<div class="pm-case-meta-row"><strong>Fecha:</strong> '.esc_html($date ?: '-').'</div>';
+    $meta = '<aside class="pm-case-meta pm-card">';
+    $meta .= '<div class="pm-case-meta-head"><span class="pm-section-kicker">Ficha del caso</span><h2 class="pm-case-meta-title">Informacion principal</h2></div>';
+    $meta .= '<div class="pm-case-meta-list">';
+    $meta .= '<div class="pm-case-meta-row"><strong>Estado</strong><span>'.$badge.'</span></div>';
+    $meta .= '<div class="pm-case-meta-row"><strong>Tipo</strong><span>'.esc_html($type[0] ?? '-').'</span></div>';
+    $meta .= '<div class="pm-case-meta-row"><strong>Especie</strong><span>'.esc_html($species[0] ?? '-').'</span></div>';
+    $meta .= '<div class="pm-case-meta-row"><strong>Zona</strong><span>'.esc_html($zone[0] ?? '-').'</span></div>';
+    $meta .= '<div class="pm-case-meta-row"><strong>Fecha</strong><span>'.esc_html($date ?: '-').'</span></div>';
 
     // Extra quick facts (optional)
     $pet_name = self::get_case_meta($post_id, 'pet_name');
@@ -200,30 +202,30 @@ trait PM_Pet_Match_Forms_Trait {
     $size_map = array('xs' => 'Muy chico', 's' => 'Chico', 'm' => 'Mediano', 'l' => 'Grande', 'xl' => 'Muy grande');
     $yn_map = array('yes' => 'Si', 'no' => 'No');
 
-    if (!empty($pet_name)) $meta .= '<div class="pm-case-meta-row"><strong>Nombre:</strong> '.esc_html($pet_name).'</div>';
-    if (!empty($sex_label)) $meta .= '<div class="pm-case-meta-row"><strong>Sexo:</strong> '.esc_html($sex_label).'</div>';
-    if (!empty($age) && isset($age_map[$age])) $meta .= '<div class="pm-case-meta-row"><strong>Edad:</strong> '.esc_html($age_map[$age]).'</div>';
-    if (!empty($size) && isset($size_map[$size])) $meta .= '<div class="pm-case-meta-row"><strong>Tamano:</strong> '.esc_html($size_map[$size]).'</div>';
-    if (!empty($color)) $meta .= '<div class="pm-case-meta-row"><strong>Color:</strong> '.esc_html($color).'</div>';
-    if (!empty($collar) && isset($yn_map[$collar])) $meta .= '<div class="pm-case-meta-row"><strong>Collar:</strong> '.esc_html($yn_map[$collar]).'</div>';
-    if (!empty($neutered) && isset($yn_map[$neutered])) $meta .= '<div class="pm-case-meta-row"><strong>Castrado/a:</strong> '.esc_html($yn_map[$neutered]).'</div>';
+    if (!empty($pet_name)) $meta .= '<div class="pm-case-meta-row"><strong>Nombre</strong><span>'.esc_html($pet_name).'</span></div>';
+    if (!empty($sex_label)) $meta .= '<div class="pm-case-meta-row"><strong>Sexo</strong><span>'.esc_html($sex_label).'</span></div>';
+    if (!empty($age) && isset($age_map[$age])) $meta .= '<div class="pm-case-meta-row"><strong>Edad</strong><span>'.esc_html($age_map[$age]).'</span></div>';
+    if (!empty($size) && isset($size_map[$size])) $meta .= '<div class="pm-case-meta-row"><strong>Tamano</strong><span>'.esc_html($size_map[$size]).'</span></div>';
+    if (!empty($color)) $meta .= '<div class="pm-case-meta-row"><strong>Color</strong><span>'.esc_html($color).'</span></div>';
+    if (!empty($collar) && isset($yn_map[$collar])) $meta .= '<div class="pm-case-meta-row"><strong>Collar</strong><span>'.esc_html($yn_map[$collar]).'</span></div>';
+    if (!empty($neutered) && isset($yn_map[$neutered])) $meta .= '<div class="pm-case-meta-row"><strong>Castrado/a</strong><span>'.esc_html($yn_map[$neutered]).'</span></div>';
 
-    $meta .= '</div>';
+    $meta .= '</div></aside>';
 
     // Lightweight map preview for single (optional)
     $map = '';
     if ($coords) {
-      $map = '<div class="pm-field"><label>Ubicacion aproximada</label><div id="pm-map-single" class="pm-map"></div></div>';
+      $map = '<section class="pm-case-section pm-case-section--map pm-card"><div class="pm-case-section-head"><span class="pm-section-kicker">Mapa</span><h2 class="pm-case-section-title">Ubicacion aproximada</h2></div><div id="pm-map-single" class="pm-map"></div><p class="pm-help">La ubicacion es aproximada y se muestra solo como referencia.</p></section>';
     }
 
     $report = '';
-    $report .= '<div class="pm-case-report pm-card">'
-      . '<div class="pm-case-report-head">Lo viste? Ayuda reportando un avistaje</div>'
+    $report .= '<section class="pm-case-report pm-card">'
+      . '<div class="pm-case-report-head"><span class="pm-section-kicker">Ayuda comunitaria</span><h2 class="pm-case-report-title">Lo viste? Reporta un avistaje</h2><p class="pm-case-report-text">Si tienes una pista reciente, comparte un mensaje claro para que el responsable pueda seguirla.</p></div>'
       . '<button type="button" class="pm-btn pm-btn-primary" data-pm-toggle="pm-sighting">Reportar avistaje</button>'
       . '<div class="pm-case-report-panel" data-pm-panel="pm-sighting" hidden>'
         . do_shortcode('[pm_report_sighting case_id="'.intval($post_id).'"]')
       . '</div>'
-    . '</div>';
+    . '</section>';
 
     $imgs = self::get_case_meta($post_id, 'images');
     $main_id = (int) get_post_thumbnail_id($post_id);
@@ -267,15 +269,16 @@ trait PM_Pet_Match_Forms_Trait {
       }
 
       $thumbs_html = $thumbs ? '<div class="pm-case-gallery-thumbs" role="list">' . $thumbs . '</div>' : '';
-      $gallery = '<div class="pm-case-gallery" data-pm-gallery><div class="pm-case-gallery-main" data-pm-gallery-stage>' . $main_button . '</div>' . $thumbs_html . '</div>';
+      $gallery = '<section class="pm-case-gallery" data-pm-gallery><div class="pm-case-gallery-main" data-pm-gallery-stage>' . $main_button . '</div>' . $thumbs_html . '</section>';
       $gallery .= '<div class="pm-gallery-lightbox" data-pm-gallery-lightbox hidden><button type="button" class="pm-gallery-lightbox-close" data-pm-gallery-close aria-label="Cerrar visor">&times;</button><img class="pm-gallery-lightbox-image" data-pm-gallery-lightbox-image src="" alt=""></div>';
     } else {
-      $gallery = '<div class="pm-case-gallery"><div class="pm-case-gallery-main pm-case-gallery-empty" style="padding:22px;">Sin imagenes cargadas.</div></div>';
+      $gallery = '<section class="pm-case-gallery"><div class="pm-case-gallery-main pm-case-gallery-empty" style="padding:22px;">Sin imagenes cargadas.</div></section>';
     }
 
-    $hero = '<div class="pm-case-wrap"><div class="pm-case-hero">' . $gallery . $meta . '</div></div>';
+    $story = '<section class="pm-case-story pm-card"><div class="pm-case-story-head"><span class="pm-section-kicker">Descripcion</span><h2 class="pm-case-section-title">Resumen del caso</h2></div><div class="pm-case-story-content">' . $content . '</div></section>';
+    $hero = '<div class="pm-case-wrap pm-app"><div class="pm-case-hero">' . $gallery . $meta . '</div><div class="pm-case-layout-secondary">' . $map . $report . '</div></div>';
 
-    return $content . $hero . $map . $report;
+    return $story . $hero;
   }
 
   

@@ -38,13 +38,21 @@ trait PM_Pet_Match_Frontend_Trait {
     $success_notice = self::get_request_feedback_notice('pm_notice');
 
     ob_start(); ?>
-    <div class="pm-wrap pm-elementor pm-app">
+    <div class="pm-wrap pm-elementor pm-app pm-page-create">
       <?php echo $success_notice; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-      <form method="post" enctype="multipart/form-data" class="pm-form" aria-label="Formulario para publicar un caso">
+      <form method="post" enctype="multipart/form-data" class="pm-form pm-create-form-shell" aria-label="Formulario para publicar un caso">
         <input type="hidden" name="pm_action" value="create_case">
         <input type="hidden" name="pm_nonce" value="<?php echo esc_attr($nonce); ?>">
 
-        <div class="pm-grid">
+        <div class="pm-form-intro">
+          <span class="pm-section-kicker">Publicar un caso</span>
+          <h2 class="pm-section-title">Carga la informacion esencial para que otras personas puedan ayudarte</h2>
+          <p class="pm-section-lead">Cuanto mas clara sea la descripcion, la zona y la foto, mas facil va a ser encontrar coincidencias utiles.</p>
+        </div>
+
+        <fieldset class="pm-form-section">
+          <legend>Datos principales</legend>
+          <div class="pm-grid pm-grid--three">
           <?php if (!$can_hide_type): ?>
             <div class="pm-field">
               <label for="pm_type">Tipo</label>
@@ -86,13 +94,17 @@ trait PM_Pet_Match_Frontend_Trait {
             <input id="pm_date" name="pm_date" type="date" required class="pm-input elementor-field">
           </div>
         </div>
+        </fieldset>
 
-        <div class="pm-field">
-          <label for="pm_description">Descripcion</label>
-          <textarea id="pm_description" name="pm_description" required rows="4" class="pm-input elementor-field" placeholder="Ej: Perro mediano negro con collar rojo, visto por ultima vez cerca de Plaza Italia."></textarea>
-        </div>
+        <fieldset class="pm-form-section">
+          <legend>Descripcion y contacto</legend>
+          <div class="pm-field">
+            <label for="pm_description">Descripcion</label>
+            <textarea id="pm_description" name="pm_description" required rows="4" class="pm-input elementor-field" placeholder="Ej: Perro mediano negro con collar rojo, visto por ultima vez cerca de Plaza Italia."></textarea>
+            <small class="pm-help">Incluye referencias visuales, comportamiento, horario aproximado y cualquier detalle que ayude a reconocerlo.</small>
+          </div>
 
-        <div class="pm-grid">
+          <div class="pm-grid pm-grid--three">
           <div class="pm-field">
             <label for="pm_pet_name">Nombre (si lo sabes)</label>
             <input id="pm_pet_name" name="pm_pet_name" type="text" class="pm-input elementor-field" placeholder="Ej: Luna">
@@ -140,7 +152,12 @@ trait PM_Pet_Match_Frontend_Trait {
             <label for="pm_color">Color</label>
             <input id="pm_color" name="pm_color" type="text" class="pm-input elementor-field" placeholder="Ej: Negro con pecho blanco">
           </div>
+          </div>
+        </fieldset>
 
+        <fieldset class="pm-form-section">
+          <legend>Senas particulares</legend>
+          <div class="pm-grid pm-grid--three">
           <div class="pm-field">
             <label for="pm_collar">Tiene collar?</label>
             <select id="pm_collar" name="pm_collar" class="pm-input elementor-field">
@@ -159,26 +176,34 @@ trait PM_Pet_Match_Frontend_Trait {
             </select>
           </div>
         </div>
+        </fieldset>
 
-        <div class="pm-field">
-          <label for="pm_photos">Fotos (minimo 1)</label>
-          <input id="pm_photos" name="pm_photos[]" type="file" accept="image/jpeg,image/png,image/gif,image/webp" multiple required class="pm-input elementor-field" aria-describedby="pm-photos-help">
-          <small id="pm-photos-help" class="pm-help">Podes subir JPG, PNG, GIF o WEBP. Al menos una imagen valida es obligatoria.</small>
-        </div>
+        <fieldset class="pm-form-section">
+          <legend>Fotos y ubicacion</legend>
+          <div class="pm-grid pm-grid--media">
+            <div class="pm-field pm-field--media">
+              <label for="pm_photos">Fotos (minimo 1)</label>
+              <input id="pm_photos" name="pm_photos[]" type="file" accept="image/jpeg,image/png,image/gif,image/webp" multiple required class="pm-input elementor-field" aria-describedby="pm-photos-help">
+              <small id="pm-photos-help" class="pm-help">Podes subir JPG, PNG, GIF o WEBP. Al menos una imagen valida es obligatoria.</small>
+              <div class="pm-inline-note">Elige fotos donde se vea bien la cara, el cuerpo y cualquier rasgo facil de identificar.</div>
+            </div>
 
-        <div class="pm-field">
-          <label>Ubicacion aproximada</label>
-          <div id="pm-map" class="pm-map"></div>
-          <div class="pm-map-actions">
-            <button type="button" class="pm-btn pm-btn-secondary" id="pm_use_my_location">Usar mi ubicacion</button>
+            <div class="pm-field pm-field--map">
+              <label>Ubicacion aproximada</label>
+              <div id="pm-map" class="pm-map"></div>
+              <div class="pm-map-actions">
+                <button type="button" class="pm-btn pm-btn-secondary" id="pm_use_my_location">Usar mi ubicacion</button>
+              </div>
+              <small class="pm-help">Hace click en el mapa o move el pin para marcar el punto aproximado.</small>
+              <input type="hidden" name="pm_lat" id="pm_lat" value="">
+              <input type="hidden" name="pm_lng" id="pm_lng" value="">
+            </div>
           </div>
-          <small class="pm-help">Hace click en el mapa o move el pin para marcar el punto aproximado.</small>
-          <input type="hidden" name="pm_lat" id="pm_lat" value="">
-          <input type="hidden" name="pm_lng" id="pm_lng" value="">
-        </div>
+        </fieldset>
 
-        <div class="pm-actions">
+        <div class="pm-actions pm-actions--submit">
           <button type="submit" class="pm-btn pm-btn-primary">Publicar caso</button>
+          <p class="pm-actions-help">Antes de enviar, revisa que la zona, la fecha y el contacto esten completos.</p>
         </div>
       </form>
     </div>
@@ -198,6 +223,11 @@ trait PM_Pet_Match_Frontend_Trait {
 
     ob_start(); ?>
     <section class="pm-home pm-app">
+      <div class="pm-home-hero">
+        <span class="pm-section-kicker">Pet Match</span>
+        <h1 class="pm-title">Una sola puerta de entrada para buscar, publicar y seguir cada caso</h1>
+        <p class="pm-home-lead">Elige la accion principal segun lo que necesites hoy. Las alertas y los avistajes aparecen dentro del buscador y de cada ficha individual.</p>
+      </div>
       <div class="pm-home-grid">
         <a class="pm-home-card pm-home-card--search" href="<?php echo esc_url($atts['search_url']); ?>">
           <div class="pm-home-card-top">
@@ -220,6 +250,16 @@ trait PM_Pet_Match_Frontend_Trait {
             <div class="pm-home-card-hint">Foto, descripcion y ubicacion aproximada. En un minuto lo publicas.</div>
           </div>
         </a>
+      </div>
+      <div class="pm-home-support">
+        <div class="pm-home-support-item">
+          <strong>Alertas por email</strong>
+          <span>Activalas desde la busqueda para recibir nuevos casos relevantes.</span>
+        </div>
+        <div class="pm-home-support-item">
+          <strong>Avistajes</strong>
+          <span>Reportalos desde cada caso con zona, horario y referencias claras.</span>
+        </div>
       </div>
     </section>
     <?php return ob_get_clean();
@@ -279,7 +319,10 @@ trait PM_Pet_Match_Frontend_Trait {
     ob_start(); ?>
     <section class="pm-slider pm-app">
       <div class="pm-slider-head">
-        <h3><?php echo esc_html($title); ?></h3>
+        <div class="pm-slider-copy">
+          <span class="pm-section-kicker">Casos recientes</span>
+          <h3 class="pm-slider-title"><?php echo esc_html($title); ?></h3>
+        </div>
         <div class="pm-slider-controls">
           <button class="pm-slider-btn" type="button" data-dir="prev" aria-label="Anterior">&lt;</button>
           <button class="pm-slider-btn" type="button" data-dir="next" aria-label="Siguiente">&gt;</button>
@@ -444,6 +487,13 @@ trait PM_Pet_Match_Frontend_Trait {
 
     ob_start(); ?>
     <section class="pm-search pm-app">
+      <div class="pm-search-head">
+        <div class="pm-search-copy">
+          <span class="pm-section-kicker">Buscador</span>
+          <h1 class="pm-title">Encuentra casos por tipo, estado, zona o cercania</h1>
+          <p class="pm-search-lead">Puedes empezar con una palabra clave, filtrar por estado o usar el mapa para enfocarte en un area concreta.</p>
+        </div>
+      </div>
       <?php if ($geo_error !== ''): ?>
         <div class="pm-error"><?php echo esc_html($geo_error); ?></div>
       <?php elseif ($has_coords): ?>
@@ -516,6 +566,13 @@ trait PM_Pet_Match_Frontend_Trait {
         <?php endforeach; ?>
       </div>
 
+      <div class="pm-search-summary">
+        <div class="pm-search-summary-copy">
+          <strong><?php echo esc_html((string) count($results)); ?> resultados</strong>
+          <span><?php echo $has_coords ? 'Ordenados por cercania al punto elegido.' : 'Ordenados por fecha de publicacion.'; ?></span>
+        </div>
+      </div>
+
       <div class="pm-cards-grid">
         <?php if (!empty($results)): foreach ($results as $item): ?>
           <div class="pm-search-card-wrap">
@@ -525,7 +582,13 @@ trait PM_Pet_Match_Frontend_Trait {
             <?php endif; ?>
           </div>
         <?php endforeach; else: ?>
-          <div class="pm-empty">No encontramos casos con esos filtros. Proba ampliar el radio, cambiar el estado o buscar con menos palabras.</div>
+          <div class="pm-empty pm-empty-search">
+            <div class="pm-empty-title">No encontramos casos con esos filtros</div>
+            <div class="pm-empty-desc">Prueba con menos palabras, cambia el estado o amplia el radio si estas buscando por cercania.</div>
+            <div class="pm-empty-actions">
+              <a class="pm-btn pm-btn-primary" href="<?php echo esc_url(get_permalink()); ?>">Limpiar busqueda</a>
+            </div>
+          </div>
         <?php endif; ?>
       </div>
     </section>
@@ -612,8 +675,15 @@ trait PM_Pet_Match_Frontend_Trait {
     $zone_terms = self::get_terms_for_taxonomy(self::get_case_taxonomy('zone'));
 
     ob_start(); ?>
+      <section class="pm-secondary-panel pm-secondary-panel--alert pm-app">
       <form method="post" class="pm-alert-form" aria-label="Crear alerta por email">
         <input type="hidden" name="pm_alert_nonce" value="<?php echo esc_attr(wp_create_nonce('pm_alert')); ?>">
+        <div class="pm-form-intro pm-form-intro--compact">
+          <span class="pm-section-kicker">Alertas por email</span>
+          <h2 class="pm-section-title">Recibe avisos cuando aparezca un caso parecido</h2>
+          <p class="pm-section-lead">Puedes dejar la alerta abierta solo para un tipo o afinarla con especie y zona.</p>
+        </div>
+        <div class="pm-grid pm-grid--two">
         <div class="pm-field">
           <label for="pm_alert_email">Email</label>
           <input id="pm_alert_email" type="email" name="pm_alert_email" placeholder="Tu email" required autocomplete="email">
@@ -644,8 +714,13 @@ trait PM_Pet_Match_Frontend_Trait {
             <?php endforeach; ?>
           </select>
         </div>
-        <button type="submit">Crear alerta</button>
+        </div>
+        <div class="pm-actions pm-actions--submit">
+          <button type="submit" class="pm-btn pm-btn-primary">Crear alerta</button>
+          <p class="pm-actions-help">Te avisaremos solo cuando haya coincidencias relevantes para esos criterios.</p>
+        </div>
       </form>
+      </section>
     <?php return ob_get_clean();
   }
 
@@ -739,8 +814,13 @@ trait PM_Pet_Match_Frontend_Trait {
       ? 'Se abre WhatsApp con tu mensaje listo para enviar al responsable del caso.'
       : ($admin_whatsapp !== '' ? 'Este caso no tiene WhatsApp propio. Usamos el contacto general configurado en Pet Match.' : 'Este caso todavia no tiene un WhatsApp de contacto cargado.');
 ?>
-<div class="pm-wa-cta" data-pm-wa="<?php echo esc_attr($wa); ?>">
-  <label class="pm-label" for="pm_wa_msg_<?php echo esc_attr($case_id); ?>">Donde lo viste? Contanos detalles utiles como zona, hora o una referencia cercana.</label>
+<div class="pm-wa-cta pm-app" data-pm-wa="<?php echo esc_attr($wa); ?>">
+  <div class="pm-wa-copy">
+    <span class="pm-section-kicker">Avistaje rapido</span>
+    <h3 class="pm-wa-title">Comparte un mensaje listo para enviar por WhatsApp</h3>
+    <p class="pm-wa-lead">Incluye zona, horario, direccion aproximada y cualquier detalle que ayude a verificar el dato.</p>
+  </div>
+  <label class="pm-label" for="pm_wa_msg_<?php echo esc_attr($case_id); ?>">Mensaje sugerido</label>
   <textarea id="pm_wa_msg_<?php echo esc_attr($case_id); ?>" class="pm-input elementor-field" rows="4" placeholder="Escribi tu mensaje..."></textarea>
 
   <div class="pm-wa-actions">
@@ -769,9 +849,29 @@ trait PM_Pet_Match_Frontend_Trait {
     if (!$thumb) $thumb = 'data:image/svg+xml;charset=utf-8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial" font-size="22">Sin foto</text></svg>');
     $status = self::get_case_status($post_id);
     $badge = self::get_case_status_label($status);
+    $type = self::get_case_term_label($post_id, self::get_case_taxonomy('type'), 'Sin tipo');
+    $species = self::get_case_term_label($post_id, self::get_case_taxonomy('species'), 'Sin especie');
+    $zone = self::get_case_term_label($post_id, self::get_case_taxonomy('zone'), 'Sin zona');
+    $date = self::get_case_meta($post_id, 'date');
+    $status_class = 'pm-status-chip pm-status-chip--' . sanitize_html_class($status);
+    $meta_items = [$species, $zone];
+    if ($date !== '') {
+      $meta_items[] = $date;
+    }
+
+    $meta_html = '';
+    foreach ($meta_items as $item) {
+      $meta_html .= '<span>' . esc_html($item) . '</span>';
+    }
+
     return '<a class="pm-card" href="'.esc_url($url).'" aria-label="'.esc_attr(sprintf('Ver caso: %s. Estado: %s', $title, $badge)).'">'.
-            '<div class="pm-card-img" style="background-image:url('.esc_url($thumb).')"></div>'.
-            '<div class="pm-card-body"><div class="pm-badge" aria-hidden="true">'.esc_html($badge).'</div><div class="pm-card-title">'.esc_html($title).'</div></div>'.
+            '<div class="pm-card-media"><div class="pm-card-img" style="background-image:url('.esc_url($thumb).')"></div><span class="'.esc_attr($status_class).'">'.esc_html($badge).'</span></div>'.
+            '<div class="pm-card-body">'.
+              '<div class="pm-card-overline">'.esc_html($type).'</div>'.
+              '<div class="pm-card-title">'.esc_html($title).'</div>'.
+              '<div class="pm-card-meta">'.$meta_html.'</div>'.
+              '<span class="pm-card-cta">Ver ficha completa</span>'.
+            '</div>'.
            '</a>';
   }
 }
