@@ -53,14 +53,79 @@
     syncButtons();
   }
 
+  function initGallery(root){
+    var $root = root ? $(root) : $(document);
+    $root.find('[data-pm-gallery]').each(function(){
+      var $gallery = $(this);
+      if ($gallery.data('pmGalleryInited')) return;
+      $gallery.data('pmGalleryInited', true);
+
+      var $stage = $gallery.find('[data-pm-gallery-stage]').first();
+      var $thumbs = $gallery.find('[data-pm-gallery-thumb]');
+      var $lightbox = $gallery.next('[data-pm-gallery-lightbox]');
+      var $lightboxImage = $lightbox.find('[data-pm-gallery-lightbox-image]').first();
+
+      function setActive($thumb){
+        if (!$thumb.length) return;
+        $thumbs.removeClass('is-active').attr('aria-pressed', 'false');
+        $thumb.addClass('is-active').attr('aria-pressed', 'true');
+
+        var large = $thumb.attr('data-pm-gallery-large') || '';
+        var full = $thumb.attr('data-pm-gallery-full') || large;
+        var alt = $thumb.attr('data-pm-gallery-alt') || '';
+
+        var buttonHtml = '<button type="button" class="pm-case-gallery-main-btn" data-pm-gallery-open data-pm-gallery-src="' + full + '" data-pm-gallery-alt="' + alt.replace(/"/g, '&quot;') + '" aria-label="Ver imagen en grande">'
+          + '<img class="pm-case-gallery-main-image" src="' + large + '" alt="' + alt.replace(/"/g, '&quot;') + '" loading="eager">'
+          + '</button>';
+        $stage.html(buttonHtml);
+      }
+
+      $thumbs.each(function(index){
+        $(this).attr('aria-pressed', $(this).hasClass('is-active') ? 'true' : 'false');
+        if (index === 0 && !$thumbs.filter('.is-active').length) {
+          $(this).addClass('is-active').attr('aria-pressed', 'true');
+        }
+      });
+
+      $thumbs.off('click.pmGallery').on('click.pmGallery', function(){
+        setActive($(this));
+      });
+
+      $gallery.off('click.pmGalleryOpen').on('click.pmGalleryOpen', '[data-pm-gallery-open]', function(){
+        if (!$lightbox.length || !$lightboxImage.length) return;
+        var src = $(this).attr('data-pm-gallery-src') || '';
+        var alt = $(this).attr('data-pm-gallery-alt') || '';
+        if (!src) return;
+        $lightboxImage.attr('src', src).attr('alt', alt);
+        $lightbox.removeAttr('hidden').addClass('is-open');
+        $('body').addClass('pm-gallery-open');
+      });
+
+      $lightbox.off('click.pmGalleryClose').on('click.pmGalleryClose', function(e){
+        if ($(e.target).is('[data-pm-gallery-close], [data-pm-gallery-lightbox]')) {
+          $lightbox.attr('hidden', 'hidden').removeClass('is-open');
+          $('body').removeClass('pm-gallery-open');
+        }
+      });
+    });
+  }
+
   $(document).ready(function(){
     $('.pm-slider').each(function(){ initSlider($(this)); });
     initToggles(document);
+    initGallery(document);
   });
 
   $(document).on('elementor/frontend/init', function(){
     $('.pm-slider').each(function(){ initSlider($(this)); });
     initToggles(document);
+    initGallery(document);
+  });
+
+  $(document).on('keydown', function(e){
+    if (e.key !== 'Escape') return;
+    $('[data-pm-gallery-lightbox].is-open').attr('hidden', 'hidden').removeClass('is-open');
+    $('body').removeClass('pm-gallery-open');
   });
 })(jQuery);
 

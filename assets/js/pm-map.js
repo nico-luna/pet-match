@@ -1,4 +1,8 @@
 (function () {
+  function isFiniteCoord(value, min, max) {
+    return typeof value === "number" && Number.isFinite(value) && value >= min && value <= max;
+  }
+
   function setHidden(lat, lng) {
     const latEl = document.getElementById("pm_lat");
     const lngEl = document.getElementById("pm_lng");
@@ -7,14 +11,22 @@
   }
 
   function initCreateMap() {
-    const mapEl = document.getElementById("pm-map");
+    const cfg = window.PM_MAP_CREATE || null;
+    const mapId = (cfg && cfg.selector) || "pm-map";
+    const mapEl = document.getElementById(mapId);
     if (!mapEl || typeof L === "undefined") return;
 
-    const startLat = (window.PM_MAP && PM_MAP.defaultLat) || -34.6630;
-    const startLng = (window.PM_MAP && PM_MAP.defaultLng) || -58.3660;
-    const startZoom = (window.PM_MAP && PM_MAP.defaultZoom) || 13;
+    const startLat = cfg ? Number(cfg.defaultLat) : -34.6630;
+    const startLng = cfg ? Number(cfg.defaultLng) : -58.3660;
+    const startZoom = (cfg && Number(cfg.defaultZoom)) || 13;
+    if (!isFiniteCoord(startLat, -90, 90) || !isFiniteCoord(startLng, -180, 180)) {
+      if (window.console) console.warn("[PetMatch] Invalid create map config", cfg);
+      return;
+    }
+    if (mapEl.dataset.pmMapInited === "1") return;
+    mapEl.dataset.pmMapInited = "1";
 
-    const map = L.map("pm-map").setView([startLat, startLng], startZoom);
+    const map = L.map(mapEl).setView([startLat, startLng], startZoom);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
@@ -49,7 +61,7 @@
           },
           function (err) {
             if (window.console) console.warn("[PetMatch] Geolocation failed", err);
-            alert((window.PM_MAP && PM_MAP.i18n && PM_MAP.i18n.geoFail) || "No pudimos obtener tu ubicación.");
+            alert((cfg && cfg.i18n && cfg.i18n.geoFail) || "No pudimos obtener tu ubicación.");
           },
           { enableHighAccuracy: true, timeout: 8000 }
         );
@@ -58,15 +70,23 @@
   }
 
   function initSingleMap() {
-    if (!(window.PM_MAP && PM_MAP.single)) return;
-    const mapEl = document.getElementById("pm-map-single");
+    const cfg = window.PM_MAP_SINGLE || null;
+    if (!cfg) return;
+    const mapId = cfg.selector || "pm-map-single";
+    const mapEl = document.getElementById(mapId);
     if (!mapEl || typeof L === "undefined") return;
+    if (mapEl.dataset.pmMapInited === "1") return;
 
-    const lat = PM_MAP.singleLat;
-    const lng = PM_MAP.singleLng;
-    const zoom = PM_MAP.defaultZoom || 15;
+    const lat = Number(cfg.lat);
+    const lng = Number(cfg.lng);
+    const zoom = Number(cfg.defaultZoom) || 15;
+    if (!isFiniteCoord(lat, -90, 90) || !isFiniteCoord(lng, -180, 180)) {
+      if (window.console) console.warn("[PetMatch] Invalid single map config", cfg);
+      return;
+    }
+    mapEl.dataset.pmMapInited = "1";
 
-    const map = L.map("pm-map-single", {
+    const map = L.map(mapEl, {
       dragging: true,
       scrollWheelZoom: false
     }).setView([lat, lng], zoom);
